@@ -1,0 +1,127 @@
+---
+title: "lab3"
+format: 
+    md:
+        output-file: README.md
+editor: visual
+---
+# Информационно-аналитические технологии поиска угроз информационной безопасности 
+
+## Лабораторная работа №3
+
+## Цель работы
+
+1. Зекрепить практические навыки использования языка программирования R для обработки данных
+2. Закрепить знания основных функций обработки данных экосистемы tidyverse языка R
+3. Развить пркатические навыки использования функций обработки данных пакета dplyr – функции
+select(), filter(), mutate(), arrange(), group_by()
+
+## Исходные данные
+
+1.  ОС Windows 10
+2.  WSL2 
+3.  Ноутбук 
+
+## План
+
+Проанализировать встроенные в пакет nycflights13 наборы данных с помощью языка R и ответить на вопро-
+сы:
+
+## Ход работы
+```{r}
+library(nycflights13)
+```
+```{r}
+library(dplyr)
+```
+
+1.Сколько встроенных в пакет nycflights13 датафреймов?
+
+```{r}
+nycflights13::airlines
+nycflights13::airports
+nycflights13::flights
+nycflights13::planes
+nycflights13::weather
+```
+2.Сколько строк в каждом датафрейме?
+
+```{r}
+nrow(nycflights13::airlines)
+nrow(nycflights13::airports)
+nrow(nycflights13::flights)
+nrow(nycflights13::planes)
+nrow(nycflights13::weather)
+```
+3.Сколько столбцов в каждом датафрейме?
+
+```{r}
+ncol(nycflights13::airlines)
+ncol(nycflights13::airports)
+ncol(nycflights13::flights)
+ncol(nycflights13::planes)
+ncol(nycflights13::weather)
+```
+4.Как просмотреть примерный вид датафрейма?
+
+```{r}
+nycflights13::airlines %>% glimpse()
+nycflights13::airports %>% glimpse()
+nycflights13::flights %>% glimpse()
+nycflights13::planes %>% glimpse()
+nycflights13::weather %>% glimpse()
+```
+5.Сколько компаний-перевозчиков (carrier) учитывают эти наборы данных (представлено в наборах дан-
+ных)?
+
+```{r}
+length(airlines$carrier)
+```
+6.Сколько рейсов принял аэропорт John F Kennedy Intl в мае?
+
+```{r}
+filter(airports,name == "John F Kennedy Intl")
+filter(flights,dest == "JFK",month == 5)
+```
+7.Какой самый северный аэропорт?
+
+```{r}
+filter(airports,lat == max(airports$lat))
+```
+8.Какой аэропорт самый высокогорный (находится выше всех над уровнем моря)?
+
+```{r}
+filter(airports,alt == max(airports$alt))
+```
+9.Какие бортовые номера у самых старых самолетов?
+```{r}
+head(arrange(planes, year),n=10)
+
+```
+10.Какая средняя температура воздуха была в сентябре в аэропорту John F Kennedy Intl (в градусах Цельсия).
+```{r}
+nycflights13::weather %>%
+  filter(month == 9,origin == "JFK") %>%
+  summarise("temp" = ((temp = mean(temp,0))-32)*5/9)
+```
+11.Самолеты какой авиакомпании совершили больше всего вылетов в июне?
+```{r}
+polet <- nycflights13::flights %>%
+  group_by(carrier) %>%
+  summarise('polet' = n())
+top1 <- head(arrange(polet,desc(polet)),n=1)
+filter(nycflights13::airlines,carrier == top1$carrier)
+```
+12.Самолеты какой авиакомпании задерживались чаще других в 2013 году?
+
+```{r}
+polet2 <- nycflights13::flights %>%
+  group_by(carrier) %>%
+  filter(dep_delay > 0, arr_delay > 0) %>%
+  summarise('polet' = n())
+top2 <- head(arrange(polet2,desc(polet)),n=1)
+filter(nycflights13::airlines,carrier == top2$carrier)
+```
+---
+
+## 
